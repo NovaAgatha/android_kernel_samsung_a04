@@ -2,6 +2,15 @@ name: Build Kernel
 on:
   workflow_dispatch:
     inputs:
+      LTO:
+        description: 'Link-time Optimizations'
+        required: true
+        default: 'none'
+        type: choice
+        options:
+          - none
+          - thin
+          - full
       BRANCH:
         description: Kernel branch
         default: 'android-4.19-stable'
@@ -15,6 +24,12 @@ on:
         type: boolean
       KSU:
         description: Add KernelSU support
+        type: boolean
+      LLVM:
+        description: LLVM=1
+        type: boolean
+      LLVM_IAS:
+        description: LLVM_IAS=1
         type: boolean
 #      UPLOAD_TO_TG:
 #        description: Upload to Telegram
@@ -75,26 +90,17 @@ jobs:
         export DEFCONFIG="${{ github.event.inputs.DEFCONFIG }}"
         export BUILD_START=`date`
         export IS_CI=true
+        export LTO="${{ github.event.inputs.LTO }}"
+        if [[ "${{ github.event.inputs.LLVM }}" = "true" ]]; then
+        	export LLVM=1
+        fi
+        if [[ "${{ github.event.inputs.LLVM_IAS }}" = "true" ]]; then
+        	export LLVM_IAS=1
+        fi
         export DEVICE="A045F"
         export TARGET_PRODUCT=a04
-
-        # do some checks
-        echo ""
-        echo ====================================================
-        echo CROSS_COMPILE=$CROSS_COMPILE
-        echo DEFCONFIG="${{ github.event.inputs.DEFCONFIG }}"
-        echo CLANG="`clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`"
-        echo CLANG_TRIPLE=$CLANG_TRIPLE
-        echo KBUILD_BUILD_USER=$KBUILD_BUILD_USER
-        echo KBUILD_BUILD_HOST=$KBUILD_BUILD_HOST
-        echo CURRENT_DIR=$(pwd)
-        echo DATE=`date`
-        echo KERNELSU="${{ github.event.inputs.KSU }}"
-        echo DEVICE="`echo $DEVICE`"
-        echo ====================================================
-        echo ""
         
-        bash $(pwd)/build_kernel.sh
+        bash $(pwd)/build.sh kernel --jobs `nproc --all` `echo $DEFCONFIG`
         if [[ ${{ github.event.inputs.KSU }} = "true" ]]; then
         	KSU_REV_COUNT=$(cd KernelSU && git rev-list --count HEAD)
         	KSU_VERSION=$(expr 10200 + $KSU_REV_COUNT)
