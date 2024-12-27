@@ -17,7 +17,7 @@ on:
         required: true
       DEFCONFIG:
         description: Defconfig
-        default: 'rsuntk_defconfig'
+        default: 'a04_defconfig'
         required: true
       CLANG_EIGHTEEN:
         description: Use clang 18
@@ -99,7 +99,7 @@ jobs:
         fi
         export DEVICE="A045F"
         export TARGET_PRODUCT=a04
-        rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
+        #rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
         
         bash $(pwd)/build.sh kernel --jobs `nproc --all` `echo $DEFCONFIG`
         if [[ ${{ github.event.inputs.KSU }} = "true" ]]; then
