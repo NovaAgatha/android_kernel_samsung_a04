@@ -75,6 +75,8 @@ jobs:
         sudo ln -s /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
       
     - name: Build kernel
+      env:
+        KBUILD_BUILD_USER: "${{ github.actor }}"
       id: buildKernel
       run: |
         if [[ "${{ github.event.inputs.CLANG_SIXTEEN }}" != "true" ]]; then
@@ -82,13 +84,13 @@ jobs:
         else
           CLANG_VERSION=16
         fi
-        
+
+        echo $KBUILD_BUILD_USER && export KBUILD_BUILD_USER=$KBUILD_BUILD_USER
         export PATH=$(pwd)/toolchains/clang-`echo $CLANG_VERSION`/bin:$PATH
         export CROSS_COMPILE=$(pwd)/toolchains/gcc-10/bin/aarch64-buildroot-linux-gnu-
         export CLANG_TRIPLE=aarch64-linux-gnu-
         export KERNELSU="${{ github.event.inputs.KSU }}"
 
-        export KBUILD_BUILD_USER="rsuntk"
         export KBUILD_BUILD_HOST="rsuntkOrgs"
         export DEFCONFIG="${{ github.event.inputs.DEFCONFIG }}"
         export BUILD_START=`date`
