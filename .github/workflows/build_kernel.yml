@@ -19,7 +19,7 @@ on:
         description: Defconfig
         default: 'rsuntk_defconfig'
         required: true
-      CLANG_EIGHTEEN:
+      CLANG_SIXTEEN:
         description: Use clang 18
         type: boolean
       KSU:
@@ -60,12 +60,12 @@ jobs:
       run: |
         mkdir toolchains
         cd toolchains
-        if [[ ${{ github.event.inputs.CLANG_EIGHTEEN }} != "true" ]]; then
+        if [[ "${{ github.event.inputs.CLANG_SIXTEEN }}" != "true" ]]; then
           git clone --depth=1 https://gitlab.com/Rissu-Projekt/toolchains/clang-toolchains.git clang-11
         else
-          mkdir clang-18 && cd clang-18
-          wget -q -O clang18.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r522817.tar.gz
-          tar -xf clang18.tar.gz && rm clang18.tar.gz && cd ..
+          mkdir clang-16 && cd clang-16
+          wget -q -O clang16.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android14-release/clang-r475365b.tar.gz
+          tar -xf clang16.tar.gz && rm clang16.tar.gz && cd ..
         fi
         git clone --depth=1 https://github.com/VH-Devices/toolchains.git -b gcc-10.3.0 gcc-10
       working-directory: kernel_root
@@ -77,10 +77,10 @@ jobs:
     - name: Build kernel
       id: buildKernel
       run: |
-        if [[ "${{ github.event.inputs.CLANG_EIGHTEEN }}" != "true" ]]; then
+        if [[ "${{ github.event.inputs.CLANG_SIXTEEN }}" != "true" ]]; then
           CLANG_VERSION=11
         else
-          CLANG_VERSION=18
+          CLANG_VERSION=16
         fi
         
         export PATH=$(pwd)/toolchains/clang-`echo $CLANG_VERSION`/bin:$PATH
@@ -102,6 +102,8 @@ jobs:
         fi
         export DEVICE="A045F"
         export TARGET_PRODUCT=a04
+
+        # its always neccessary to update driver
         rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
         
         if [[ "${{ github.event.inputs.SELINUX_PERMISSIVE }}" = "true" ]]; then
@@ -119,11 +121,11 @@ jobs:
         echo "- KernelSU version: $KSU_VERSION"
         
         ## CREATE buildDetails.txt
-        printf "Localversion: `./getutsrel`
-        Clang version: `clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`
-        Defconfig: `echo $DEFCONFIG`
-        KernelSU: `echo $KSU_VERSION`
-        Build start: `echo $BUILD_START`
+        #printf "Localversion: `./getutsrel`
+        #Clang version: `clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`
+        #Defconfig: `echo $DEFCONFIG`
+        #KernelSU: `echo $KSU_VERSION`
+        #Build start: `echo $BUILD_START`
         " >> buildDetails.txt
         
         echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
@@ -172,10 +174,10 @@ jobs:
         
     - name: Strip LKMs
       run: |
-        if [[ "${{ github.event.inputs.CLANG_EIGHTEEN }}" != "true" ]]; then
+        if [[ "${{ github.event.inputs.CLANG_SIXTEEN }}" != "true" ]]; then
           CLANG_VERSION=11
         else
-          CLANG_VERSION=18
+          CLANG_VERSION=16
         fi
         
         # Cleanup zip
