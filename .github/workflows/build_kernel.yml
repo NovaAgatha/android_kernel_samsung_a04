@@ -20,7 +20,7 @@ on:
         default: 'rsuntk_defconfig'
         required: true
       CLANG_SIXTEEN:
-        description: Use clang 18
+        description: Use clang 16
         type: boolean
       KSU:
         description: Add KernelSU support
@@ -29,7 +29,7 @@ on:
         description: LLVM=1
         type: boolean
       LLVM_IAS:
-        description: LLVM_IAS=1
+        description: LLVM_IAS=1 (LLVM=1 required!)
         type: boolean
       SELINUX_PERMISSIVE:
         description: Set SELinux as Permissive by default
@@ -126,9 +126,9 @@ jobs:
         #Defconfig: `echo $DEFCONFIG`
         #KernelSU: `echo $KSU_VERSION`
         #Build start: `echo $BUILD_START`
-        " >> buildDetails.txt
+        #" >> buildDetails.txt
         
-        echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
+        #echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
         
         echo ""
         echo "===================================================="
