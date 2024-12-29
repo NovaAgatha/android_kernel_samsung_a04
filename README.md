@@ -2,7 +2,7 @@
 
 ### How to clone this repository
 ```sh
-git clone https://github.com/rsuntkOrgs/android_kernel_samsung_a04.git -b android-4.19-stable
+git clone https://github.com/rsuntkOrgs/android_kernel_samsung_a04.git -b stable
 ```
 
 ### Credits
