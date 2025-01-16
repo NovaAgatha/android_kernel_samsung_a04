@@ -4,13 +4,13 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=
-#do.devicecheck=1
+kernel.string=A04 Kernel by NovaAgatha
+do.devicecheck=1
 #do.modules=0
 #ldo.systemless=1
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=
+device.name1=a04
 device.name2=
 device.name3=
 device.name4=
